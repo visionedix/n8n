@@ -1,0 +1,187 @@
+{
+  "name": "Gmail Labels Config",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "92452074-a9d3-4dbb-b7cd-a8dbf66dfa01",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nId1QqLeBh2F9WWQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Test",
+              "description": "test"
+            },
+            {
+              "category": "others",
+              "description": "All other emails that do not meet the  Description"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Please classify the text provided by the user into one of the following categories: {categories}, and use the provided formatting instructions below. Don't explain, and only output the json."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "1940d77c-9ecb-450d-b855-253e97108a4e",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        220
+      ],
+      "id": "49a3c013-bc5d-4480-bb69-5b332a427227",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "MUKy3N6go57vQvCA",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_2568998435247012464"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        580,
+        -100
+      ],
+      "id": "82189739-7a73-4d34-aff4-c357be72a26e",
+      "name": "Gmail",
+      "webhookId": "40aae837-f0fe-4e30-b643-ced98dc7ebc9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nId1QqLeBh2F9WWQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_6335817594292130287"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        580,
+        100
+      ],
+      "id": "ded66770-43a0-4ef3-a9fd-c73dea917ef7",
+      "name": "Gmail1",
+      "webhookId": "753bb37e-6dc3-433e-a6ec-70a85d257f0d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nId1QqLeBh2F9WWQ",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9c01e5ce-7a81-43d2-9661-c01833506825",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4419ec2fcbe18d79f90622d59fca9d16f2dc0e3150573dc14680929bc827bc73"
+  },
+  "id": "C9gMOowV1WXcNAQH",
+  "tags": []
+}
